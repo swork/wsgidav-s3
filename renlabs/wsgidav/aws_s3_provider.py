@@ -624,6 +624,8 @@ class AWSS3Provider(DAVProvider):
         """
         self._count_get_resource_inst += 1
 
+        if len(davPath) == 0:
+            raise DAVError(HTTP_NOT_FOUND)
         if davPath[0] != '/':
             return None
         if '//' in davPath:

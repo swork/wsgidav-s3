@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="wsgidav-s3",
-    version="0.0.2",
+    version="0.0.3",
     packages=['renlabs.wsgidav'],
     author="Steve Work",
     author_email="steve@work.renlabs.com",
