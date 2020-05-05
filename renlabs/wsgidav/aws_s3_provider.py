@@ -205,14 +205,12 @@ class FileObjectResource(DAVNonCollection):
         See DAVResource.get_content()
         """
         assert not self.is_collection
-        # GC issue 28, 57: if we open in text mode, \r\n is converted to one byte.
-        # So the file size reported by Windows differs from len(..), thus
-        # content-length will be wrong.
         if self._content_sink:
             raise RuntimeError("get_content while writing?")
         response = self.s3Client.get_object(
             Bucket=self.provider.bucket,
             Key=self.listing_item['Key'])
+        logger.debug(f'{__name__} TODO extract S3 content-type here? Other metadata?')
         return StreamingBodyWrapper(response['Body'])
 
     def begin_write(self, content_type=None):
@@ -248,11 +246,13 @@ class FileObjectResource(DAVNonCollection):
             return
         # else
         content = self._content_sink.getvalue()
-        response = self.s3Client.put_object(
-            Bucket=self.provider.bucket,
-            Key=self.provider.root_prefix + self.davPath[1:],
-            Body=self._content_sink.getvalue(),
-            ContentType=self._content_sink_type or "text/plain")  # default?
+        kwargs = {
+            'Bucket': self.provider.bucket,
+            'Key': self.provider.root_prefix + self.davPath[1:],
+            'Body': self._content_sink.getvalue()}
+        if self._content_sink_type:
+            kwargs['ContentType'] = self._content_sink_type
+        response = self.s3Client.put_object(**kwargs)
         self._content_sink = None
         self._content_sink_type = None
         _logger.info(f'end_write wrote {len(content)} to {self.provider.bucket}:{self.davPath}')
