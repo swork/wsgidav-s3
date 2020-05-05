@@ -210,7 +210,7 @@ class FileObjectResource(DAVNonCollection):
         response = self.s3Client.get_object(
             Bucket=self.provider.bucket,
             Key=self.listing_item['Key'])
-        logger.debug(f'{__name__} TODO extract S3 content-type here? Other metadata?')
+        _logger.debug(f'{__name__} TODO extract S3 content-type here? Other metadata?')
         return StreamingBodyWrapper(response['Body'])
 
     def begin_write(self, content_type=None):
