@@ -252,8 +252,7 @@ class FileObjectResource(DAVNonCollection):
             Bucket=self.provider.bucket,
             Key=self.provider.root_prefix + self.davPath[1:],
             Body=self._content_sink.getvalue(),
-            ContentType=self._content_sink_type
-        )
+            ContentType=self._content_sink_type or "text/plain")
         self._content_sink = None
         self._content_sink_type = None
         _logger.info(f'end_write wrote {len(content)} to {self.provider.bucket}:{self.davPath}')
